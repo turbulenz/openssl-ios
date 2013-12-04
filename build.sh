@@ -12,15 +12,17 @@ OPENSSL_VERSION="1.0.1c"
 
 DEVELOPER="/Applications/Xcode.app/Contents/Developer"
 
-SDK_VERSION="6.1"
+SDK_VERSION="7.0"
 
 IPHONEOS_PLATFORM="${DEVELOPER}/Platforms/iPhoneOS.platform"
 IPHONEOS_SDK="${IPHONEOS_PLATFORM}/Developer/SDKs/iPhoneOS${SDK_VERSION}.sdk"
-IPHONEOS_GCC="${IPHONEOS_PLATFORM}/Developer/usr/bin/gcc"
+IPHONEOS_GCC="clang"
+# ${IPHONEOS_PLATFORM}/Developer/usr/bin/gcc"
 
 IPHONESIMULATOR_PLATFORM="${DEVELOPER}/Platforms/iPhoneSimulator.platform"
 IPHONESIMULATOR_SDK="${IPHONESIMULATOR_PLATFORM}/Developer/SDKs/iPhoneSimulator${SDK_VERSION}.sdk"
-IPHONESIMULATOR_GCC="${IPHONESIMULATOR_PLATFORM}/Developer/usr/bin/gcc"
+IPHONESIMULATOR_GCC="clang"
+# ${IPHONESIMULATOR_PLATFORM}/Developer/usr/bin/gcc"
 
 # Clean up whatever was left from our previous build
 
