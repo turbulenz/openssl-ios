@@ -5,7 +5,7 @@
 # armv6, armv7, arm7s and i386.
 
 set -x
-set -e
+# set -e
 
 # Setup paths to stuff we need
 
@@ -77,25 +77,31 @@ build()
    perl -i -pe 's|static volatile sig_atomic_t intr_signal|static volatile int intr_signal|' crypto/ui/ui_openssl.c
    perl -i -pe "s|^CC= gcc|CC= ${GCC} -arch ${ARCH} -miphoneos-version-min=${MIN_VERSION}|g" Makefile
    perl -i -pe "s|^CFLAG= (.*)|CFLAG= -isysroot ${SDK} \$1|g" Makefile
-   make &> "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}.build-log"
+   make -j 5 &> "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}.build-log"
    make install &> "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}.install-log"
    popd
    rm -rf "openssl-${OPENSSL_VERSION}"
 }
 
 build "BSD-generic32" "armv7" "${IPHONEOS_GCC}" "${IPHONEOS_SDK}" ""
-build "BSD-generic32" "armv7s" "${IPHONEOS_GCC}" "${IPHONEOS_SDK}" ""
-build "BSD-generic64" "arm64" "${IPHONEOS_GCC}" "${IPHONEOS_SDK}" ""
+# build "BSD-generic32" "armv7s" "${IPHONEOS_GCC}" "${IPHONEOS_SDK}" ""
+# build "BSD-generic64" "arm64" "${IPHONEOS_GCC}" "${IPHONEOS_SDK}" ""
 build "BSD-generic32" "i386" "${IPHONESIMULATOR_GCC}" "${IPHONESIMULATOR_SDK}" ""
-build "BSD-generic64" "x86_64" "${IPHONESIMULATOR_GCC}" "${IPHONESIMULATOR_SDK}" "-DOPENSSL_NO_ASM"
-
+# build "BSD-generic64" "x86_64" "${IPHONESIMULATOR_GCC}" "${IPHONESIMULATOR_SDK}" "-DOPENSSL_NO_ASM"
 
 #
 
 mkdir include
 cp -r /tmp/openssl-${OPENSSL_VERSION}-i386/include/openssl include/
 
-mkdir lib
+mkdir -p lib/i386
+cp /tmp/openssl-${OPENSSL_VERSION}-i386/lib/lib*.a lib/i386
+
+mkdir -p lib/armv7
+cp /tmp/openssl-${OPENSSL_VERSION}-armv7/lib/lib*.a lib/armv7
+
+if [ "1" == "2" ] ; then
+
 lipo \
 	"/tmp/openssl-${OPENSSL_VERSION}-armv7/lib/libcrypto.a" \
 	"/tmp/openssl-${OPENSSL_VERSION}-armv7s/lib/libcrypto.a" \
@@ -111,6 +117,7 @@ lipo \
 	"/tmp/openssl-${OPENSSL_VERSION}-x86_64/lib/libssl.a" \
 	-create -output lib/libssl.a
 
+fi
+
 rm -rf "/tmp/openssl-${OPENSSL_VERSION}-*"
 rm -rf "/tmp/openssl-${OPENSSL_VERSION}-*.*-log"
-
